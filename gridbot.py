@@ -192,7 +192,7 @@ def manage_gridbot(thebot):
 
     gridinfo = get_gridbots_data(pair)
 
-    if gridinfo is None:
+    if gridinfo is None or not gridinfo :
         logger.info(f"No grid setup information found for {pair}, skipping update")
         return
 
@@ -220,7 +220,7 @@ def manage_gridbot(thebot):
         f"Upper: {upperprice} -> {newupperprice} Lower: {lowerprice} -> {newlowerprice}",
         True,
     )
-    return
+    # return
 
     # Update the bot with new limits
     result = update_gridbot(thebot, newupperprice, newlowerprice)
