@@ -115,12 +115,29 @@ def update_gridbot(gridbot, upperprice, lowerprice):
             "grids_quantity": gridbot["grids_quantity"],
         },
     )
+
     if data:
         logger.info(
             f"Moved the grid of gridbot '{botname}' using pair {pair} with"
             f" upper and lower price: {upperprice} - {lowerprice}",
             True,
         )
+
+        # Updating the gridbot with the new grid stops the bot. Need to enable the bot again.
+        if not data["is_enabled"]:
+            error, enable = api.request(
+                entity="grid_bots",
+                action="enable",
+                action_id=str(gridbot["id"]),
+                payload={
+                    "bot_id": gridbot["id"],
+                },
+            )
+
+            if enable:
+                logger.info(f"Enabled Gridbot '{botname}'", True)
+                return None
+
         return None
 
     logger.error(
@@ -192,8 +209,9 @@ def manage_gridbot(thebot):
 
     gridinfo = get_gridbots_data(pair)
 
-    if gridinfo is None or not gridinfo :
-        logger.info(f"No grid setup information found for {pair}, skipping update")
+    if gridinfo is None or not gridinfo:
+        logger.info(
+            f"No grid setup information found for {pair}, skipping update")
         return
 
     newupperprice = gridinfo["upper"]
@@ -237,11 +255,13 @@ def manage_gridbot(thebot):
                     f"Failed to update gridbot with suggested minimum upper price of {upperprice}"
                 )
 
+
 # Start application
 program = Path(__file__).stem
 
 # Parse and interpret options.
-parser = argparse.ArgumentParser(description="Cyberjunky's 3Commas bot helper.")
+parser = argparse.ArgumentParser(
+    description="Cyberjunky's 3Commas bot helper.")
 parser.add_argument("-d", "--datadir", help="data directory to use", type=str)
 
 args = parser.parse_args()
@@ -308,7 +328,8 @@ while True:
             logger.debug("Raw Gridbot data: %s" % botdata)
             manage_gridbot(botdata)
         else:
-            logger.error("Error occurred managing gridbots: %s" % boterror["msg"])
+            logger.error("Error occurred managing gridbots: %s" %
+                         boterror["msg"])
 
     if not wait_time_interval(logger, notification, timeint):
         break
