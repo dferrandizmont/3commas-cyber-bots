@@ -99,6 +99,8 @@ def update_gridbot(gridbot, upperprice, lowerprice):
 
     botname = gridbot["name"]
     pair = gridbot["pair"]
+    data = {}
+    error = {}
 
     error, data = api.request(
         entity="grid_bots",
@@ -115,6 +117,36 @@ def update_gridbot(gridbot, upperprice, lowerprice):
             "grids_quantity": gridbot["grids_quantity"],
         },
     )
+
+    # if "quantity_per_grid" in error["msg"]:
+    #     min_quantity_per_grid = re.findall("\d+\.\d+", error["msg"])[0]
+    #     boterror, botdata = api.request(
+    #         entity="grid_bots",
+    #         action="get",
+    #         action_id=str(bot),
+    #     )
+    #     if botdata:
+    #         print("Raw Gridbot data: %s" % botdata)
+    #         # manage_gridbot(botdata)
+
+    #     min_quantity_per_grid = round(float(min_quantity_per_grid), 1)
+    #     # print('Error: quantity_per_grid must be at least %s' % min_quantity_per_grid)
+
+    #     error, data = api.request(
+    #         entity="grid_bots",
+    #         action="manual_update",
+    #         action_id=str(gridbot["id"]),
+    #         payload={
+    #             "bot_id": gridbot["id"],
+    #             "name": gridbot["name"],
+    #             "account_id": gridbot["account_id"],
+    #             "pair": gridbot["pair"],
+    #             "upper_price": upperprice,
+    #             "lower_price": lowerprice,
+    #             "quantity_per_grid": min_quantity_per_grid,
+    #             "grids_quantity": gridbot["grids_quantity"],
+    #         },
+    #     )
 
     if data:
         logger.info(
